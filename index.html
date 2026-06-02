@@ -69,6 +69,17 @@ code{background:rgba(124,90,247,.15);border:1px solid rgba(124,90,247,.3);paddin
 
 footer{position:relative;z-index:1;text-align:center;padding:32px;border-top:1px solid rgba(255,255,255,.06);color:var(--muted);font-size:13px}
 footer a{color:var(--purple);text-decoration:none}
+
+/* Command box */
+.cmd-box{background:#08081a;border:1px solid rgba(124,90,247,.4);border-radius:12px;overflow:hidden;margin:24px 0;text-align:left}
+.cmd-header{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:rgba(124,90,247,.12);border-bottom:1px solid rgba(124,90,247,.2)}
+.cmd-label{font-size:11px;font-weight:700;color:var(--purple);letter-spacing:1.5px;text-transform:uppercase}
+.btn-copy{background:rgba(124,90,247,.2);border:1px solid rgba(124,90,247,.4);color:var(--purple);padding:4px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-copy:hover{background:var(--purple);color:#fff}
+.btn-copy.copied{background:#22c55e;border-color:#22c55e;color:#fff}
+.cmd-text{display:block;padding:14px 16px;font-family:'Consolas','Courier New',monospace;font-size:12px;color:#b8b8e0;word-break:break-all;line-height:1.7;cursor:text;user-select:all}
+.ps-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:left}
+.ps-hint b{color:var(--text)}
 </style>
 </head>
 <body>
@@ -147,12 +158,21 @@ footer a{color:var(--purple);text-decoration:none}
   <p>VOID installs alongside Vencord — requires Vencord to be installed first.</p>
   <div class="steps">
     <div class="step"><div class="step-num">1</div><div class="step-text"><b>Install Vencord</b> from <a href="https://vencord.dev" style="color:#7c5af7">vencord.dev</a> if you haven't already.</div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-text"><b>Download VOID</b> using the button below. It's a ZIP containing 4 files.</div></div>
-    <div class="step"><div class="step-num">3</div><div class="step-text"><b>Extract</b> the ZIP and copy the 4 files to <code>%AppData%\Vencord\dist\</code> (replace existing).</div></div>
-    <div class="step"><div class="step-num">4</div><div class="step-text"><b>Restart Discord</b> completely (quit from tray, relaunch). Look for <b>VOID</b> in settings!</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><b>Open PowerShell</b> — press <code>Win + R</code>, type <code>powershell</code>, press Enter. Then paste the command below and press Enter.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">Discord closes, VOID installs, Discord restarts. Open Settings — look for <b>VOID Settings</b> in the sidebar!</div></div>
   </div>
-  <div class="btn-group">
-    <a href="https://orelazugi1-code.github.io/void-discord/void-dist.zip" class="btn-primary">⬇ Download VOID (ZIP)</a>
+
+  <div class="cmd-box">
+    <div class="cmd-header">
+      <span class="cmd-label">PowerShell</span>
+      <button class="btn-copy" id="copyBtn" onclick="copyCmd()">📋 Copy</button>
+    </div>
+    <code class="cmd-text" id="cmdText">$d="$env:APPDATA\Vencord\dist"; if(!(Test-Path $d)){Write-Host "Install Vencord first! vencord.dev"; exit}; Get-Process Discord -EA 0 | Stop-Process -Force; Start-Sleep 2; $b="https://orelazugi1-code.github.io/void-discord"; "patcher.js","preload.js","renderer.js","renderer.css" | % { Invoke-WebRequest "$b/$_" -OutFile "$d\$_" -UseBasicParsing }; Start-Process "$env:LOCALAPPDATA\Discord\Update.exe" "--processStart Discord.exe" -EA 0; Write-Host "VOID installed! Open Discord Settings and look for VOID Settings."</code>
+  </div>
+  <p class="ps-hint">Click the box to select all, or use the <b>Copy</b> button. Paste into PowerShell and press Enter.</p>
+
+  <div class="btn-group" style="margin-top:24px">
+    <button class="btn-primary" onclick="copyCmd()">📋 Copy Install Command</button>
     <a href="https://github.com/orelazugi1-code/void-discord" class="btn-ghost" target="_blank">📂 GitHub</a>
   </div>
 </section>
@@ -161,5 +181,28 @@ footer a{color:var(--purple);text-decoration:none}
   <p>VOID is a fork of <a href="https://github.com/Vendicated/Vencord">Vencord</a> • Licensed under GPL-3.0 • Made with 💜</p>
 </footer>
 
+<script>
+function copyCmd() {
+  const text = document.getElementById('cmdText').textContent;
+  const btn = document.getElementById('copyBtn');
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
 </body>
 </html>

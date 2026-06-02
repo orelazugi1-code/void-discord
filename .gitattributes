@@ -2,3 +2,5 @@
 *.exe  binary
 *.ico  binary
 *.png  binary
+*.js   text eol=lf
+*.css  text eol=lf
