@@ -158,8 +158,8 @@ footer a{color:var(--purple);text-decoration:none}
   <p>VOID installs alongside Vencord — requires Vencord to be installed first.</p>
   <div class="steps">
     <div class="step"><div class="step-num">1</div><div class="step-text"><b>Install Vencord</b> from <a href="https://vencord.dev" style="color:#7c5af7">vencord.dev</a> if you haven't already.</div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-text"><b>Open PowerShell</b> — press <code>Win + R</code>, type <code>powershell</code>, press Enter. Paste the command below and press Enter. It downloads and runs the installer automatically.</div></div>
-    <div class="step"><div class="step-num">3</div><div class="step-text">The installer closes Discord, copies the files, and relaunches it. Open Settings — look for <b>VOID Settings</b> in the sidebar!</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><b>Open PowerShell</b> — press <code>Win + R</code>, type <code>powershell</code>, press Enter. Then paste the command below and press Enter.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">Discord closes, VOID installs, Discord restarts. Open Settings — look for <b>VOID Settings</b> in the sidebar!</div></div>
   </div>
 
   <div class="cmd-box">
@@ -167,7 +167,7 @@ footer a{color:var(--purple);text-decoration:none}
       <span class="cmd-label">PowerShell</span>
       <button class="btn-copy" id="copyBtn" onclick="copyCmd()">📋 Copy</button>
     </div>
-    <code class="cmd-text" id="cmdText">$f="$env:TEMP\void-installer.exe"; Invoke-WebRequest "https://orelazugi1-code.github.io/void-discord/void-installer.exe" -OutFile $f -UseBasicParsing; Start-Process $f -Wait; Remove-Item $f -EA 0</code>
+    <code class="cmd-text" id="cmdText">$d="$env:APPDATA\Vencord\dist"; if(!(Test-Path $d)){Write-Host "Install Vencord first! vencord.dev"; exit}; Get-Process Discord -EA 0 | Stop-Process -Force; Start-Sleep 2; $b="https://orelazugi1-code.github.io/void-discord"; "patcher.js","preload.js","renderer.js","renderer.css" | % { Invoke-WebRequest "$b/$_" -OutFile "$d\$_" -UseBasicParsing }; Start-Process "$env:LOCALAPPDATA\Discord\Update.exe" "--processStart Discord.exe" -EA 0; Write-Host "VOID installed! Open Discord Settings and look for VOID Settings."</code>
   </div>
   <p class="ps-hint">Click the box to select all, or use the <b>Copy</b> button. Paste into PowerShell and press Enter.</p>
 
