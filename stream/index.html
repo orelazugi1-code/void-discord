@@ -101,7 +101,7 @@ footer a{color:var(--purple);text-decoration:none}
   <h1>VOID Stream</h1>
   <p class="tagline">Professional live streaming with glow templates, cinematic transitions, and real-time effects. For Discord, WhatsApp, TikTok, YouTube — everywhere.</p>
   <div class="btn-group">
-    <a href="https://github.com/orelazugi1-code/void-discord/releases/latest/download/VOID-Stream.zip" class="btn-dl" download id="dl-btn">⬇ Download for Windows (.zip)</a>
+    <a href="https://github.com/orelazugi1-code/void-discord/releases/latest/download/VOID-Stream.zip" class="btn-dl" download id="dl-btn">⬇ Download VOID Stream</a>
     <a href="#install" class="btn-ghost">⌨ PowerShell Install</a>
   </div>
   <p class="dl-note">Windows 10/11 · Free · Portable (no install needed)</p>
@@ -170,7 +170,7 @@ footer a{color:var(--purple);text-decoration:none}
       <span class="cmd-lbl">PowerShell</span>
       <button class="cmd-copy" id="copyBtn" onclick="copyCmd()">📋 Copy</button>
     </div>
-    <code class="cmd-text" id="cmdText">$dest="$env:USERPROFILE\VOID-Stream"; $zip="$env:TEMP\VOID-Stream.zip"; Write-Host "Downloading..."; iwr "https://github.com/orelazugi1-code/void-discord/releases/latest/download/VOID-Stream.zip" -OutFile $zip -UseBasicParsing; Write-Host "Extracting..."; Expand-Archive $zip $dest -Force; Remove-Item $zip; $exe=Get-ChildItem "$dest" -Filter "*.exe" -Recurse | Select-Object -First 1; Start-Process $exe.FullName; Write-Host "VOID Stream installed at $dest"</code>
+    <code class="cmd-text" id="cmdText">$d="$env:USERPROFILE\VOID-Stream"; iwr "https://github.com/orelazugi1-code/void-discord/releases/latest/download/VOID-Stream.zip" -OutFile "$env:TEMP\vs.zip" -UseBasicParsing; Expand-Archive "$env:TEMP\vs.zip" $d -Force; Start-Process "$d\VOID-Stream-win32-x64\VOID-Stream.exe"; Write-Host "VOID Stream installed!"</code>
   </div>
   <p class="ps-hint">Press <b>Win+R</b> → type <b>powershell</b> → paste the command → Enter</p>
 </section>
